@@ -1,0 +1,91 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public class DataReconciliation {
+
+    public static void main(String[] args) {
+        // Provided datasets
+        List<Tuple> data1 = List.of(
+                new Tuple(1, "A"), new Tuple(2, "B"), new Tuple(3, "C"), new Tuple(4, "D"),
+                new Tuple(1, "A"), new Tuple(2, "B"), new Tuple(3, "C"), new Tuple(4, "x")
+        );
+
+        List<Tuple> data2 = List.of(
+                new Tuple(1, "A"), new Tuple(2, "B"), new Tuple(3, "C"), new Tuple(4, "D"),
+                new Tuple(1, "A"), new Tuple(2, "B"), new Tuple(3, "C"), new Tuple(4, "d")
+        );
+
+        // Perform reconciliation
+        reconcile(data1, data2);
+    }
+
+    public static void reconcile(List<Tuple> data1, List<Tuple> data2) {
+        // Lists to store results
+        List<Tuple> matches = new ArrayList<>();
+        List<Tuple> mismatches = new ArrayList<>();
+        List<Tuple> missingInData1 = new ArrayList<>(data2);
+        List<Tuple> missingInData2 = new ArrayList<>(data1);
+
+        // Finding matches and mismatches
+        for (Tuple t1 : data1) {
+            boolean found = false;
+            for (Tuple t2 : data2) {
+                if (t1.equals(t2)) {
+                    matches.add(t1);
+                    missingInData1.remove(t2);
+                    missingInData2.remove(t1);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                mismatches.add(t1);
+            }
+        }
+
+        // Output results
+        System.out.println("Matches: " + matches);
+        System.out.println("Mismatches: " + mismatches);
+        System.out.println("Missing in Data1: " + missingInData1);
+        System.out.println("Missing in Data2: " + missingInData2);
+    }
+}
+
+// Tuple class to represent the data
+class Tuple {
+    private int id;
+    private String value;
+
+    public Tuple(int id, String value) {
+        this.id = id;
+        this.value = value;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tuple tuple = (Tuple) o;
+        return id == tuple.id && value.equals(tuple.value);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Integer.hashCode(id);
+        result = 31 * result + value.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + id + ", '" + value + "')";
+    }
+}
